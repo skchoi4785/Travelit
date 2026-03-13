@@ -53,7 +53,7 @@ cp .env.example .env
 docker compose up --build
 
 # 백엔드 DB 마이그레이션 (최초 1회 또는 스키마 변경 시)
-docker compose exec backend npx prisma migrate dev
+docker compose exec backend npx prisma migrate dev --name init
 
 # 초기 데이터 시드 (필요한 경우)
 docker compose exec backend npx ts-node prisma/seed.ts
@@ -61,8 +61,8 @@ docker compose exec backend npx ts-node prisma/seed.ts
 
 서비스 접속:
 - 프론트엔드: http://localhost:3000
-- 백엔드 API: http://localhost:8000
-- API 문서 (Swagger): http://localhost:8000/api/docs
+- 백엔드 API: http://localhost:4000
+- API 문서 (Swagger): http://localhost:4000/api/docs
 
 ---
 

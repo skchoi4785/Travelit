@@ -1,0 +1,24 @@
+// Prisma 스키마 파일
+// 데이터베이스 연결 및 모델 정의
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 모델
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  username     String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
