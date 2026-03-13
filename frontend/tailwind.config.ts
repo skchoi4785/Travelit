@@ -3,9 +3,10 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   // Tailwind CSS 적용 파일 경로 설정
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/contexts/**/*.{js,ts,jsx,tsx}",
+    "./src/styles/**/*.css",
   ],
   theme: {
     extend: {

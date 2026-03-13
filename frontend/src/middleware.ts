@@ -23,8 +23,8 @@ const AUTH_PATHS = ["/login", "/register"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 쿠키에서 accessToken 확인 (Edge Runtime 호환)
-  const accessToken = request.cookies.get("accessToken")?.value;
+  // 쿠키에서 accessToken 확인 (Next.js 12: cookies.get()은 문자열 직접 반환)
+  const accessToken = request.cookies.get("accessToken") as string | undefined;
   const isAuthenticated = !!accessToken;
 
   // 보호 경로 접근 시 인증 확인

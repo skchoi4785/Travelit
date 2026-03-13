@@ -1,18 +1,13 @@
 "use client";
 
 /**
- * Header 컴포넌트
- * 로고("Travelit")와 로그인 상태에 따른 네비게이션을 표시합니다.
- * - 비로그인 상태: 로그인/회원가입 버튼
- * - 로그인 상태: 내 계획/로그아웃 버튼
+ * Header 컴포넌트 (Next.js 12 호환)
  */
 
-import React from "react";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import Button from "@/components/common/Button";
+import React from 'react';
+import Link from 'next/link';
+import { useAuth } from '../../contexts/AuthContext';
 
-/** Header 컴포넌트 */
 export default function Header() {
   const { user, isLoading, logout } = useAuth();
 
@@ -21,60 +16,52 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 로고 */}
-          <Link href="/" className="flex items-center gap-2 group">
-            {/* 비행기 아이콘 */}
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-ocean-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-              <svg
-                viewBox="0 0 24 24"
-                fill="white"
-                className="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-ocean-600 bg-clip-text text-transparent">
-              Travelit
-            </span>
+          <Link href="/">
+            <a className="flex items-center gap-2 group">
+              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5" aria-hidden="true">
+                  <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold text-teal-600">Travelit</span>
+            </a>
           </Link>
 
-          {/* 네비게이션 영역 */}
+          {/* 네비게이션 */}
           <nav className="flex items-center gap-3">
-            {/* 로딩 중일 때는 스켈레톤 표시 */}
             {isLoading ? (
               <div className="flex gap-3">
                 <div className="w-20 h-9 bg-gray-100 rounded-lg animate-pulse" />
                 <div className="w-24 h-9 bg-gray-100 rounded-lg animate-pulse" />
               </div>
             ) : user ? (
-              /* 로그인 상태: 내 계획 + 로그아웃 */
               <>
-                {/* 사용자 환영 메시지 */}
                 <span className="text-sm text-gray-600 hidden sm:block">
-                  <span className="font-medium text-primary-700">{user.username}</span>님
+                  <span className="font-medium text-teal-700">{user.username}</span>님
                 </span>
                 <Link href="/plans">
-                  <Button variant="outline" size="sm">
+                  <a className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     내 계획
-                  </Button>
+                  </a>
                 </Link>
-                <Button variant="secondary" size="sm" onClick={logout}>
+                <button
+                  onClick={logout}
+                  className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                >
                   로그아웃
-                </Button>
+                </button>
               </>
             ) : (
-              /* 비로그인 상태: 로그인 + 회원가입 */
               <>
                 <Link href="/login">
-                  <Button variant="outline" size="sm">
+                  <a className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     로그인
-                  </Button>
+                  </a>
                 </Link>
                 <Link href="/register">
-                  <Button variant="primary" size="sm">
+                  <a className="px-3 py-1.5 text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors">
                     회원가입
-                  </Button>
+                  </a>
                 </Link>
               </>
             )}

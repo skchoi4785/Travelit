@@ -198,11 +198,8 @@ export default function RegisterForm() {
       {/* 로그인 링크 */}
       <p className="text-center text-sm text-gray-600">
         이미 계정이 있으신가요?{" "}
-        <Link
-          href="/login"
-          className="font-medium text-primary-600 hover:text-primary-700 hover:underline"
-        >
-          로그인
+        <Link href="/login">
+          <a className="font-medium text-teal-600 hover:text-teal-700 hover:underline">로그인</a>
         </Link>
       </p>
     </form>

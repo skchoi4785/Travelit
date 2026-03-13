@@ -7,7 +7,7 @@
  */
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/common/Button";
@@ -138,11 +138,8 @@ export default function LoginForm() {
       {/* 회원가입 링크 */}
       <p className="text-center text-sm text-gray-600">
         아직 계정이 없으신가요?{" "}
-        <Link
-          href="/register"
-          className="font-medium text-primary-600 hover:text-primary-700 hover:underline"
-        >
-          회원가입
+        <Link href="/register">
+          <a className="font-medium text-teal-600 hover:text-teal-700 hover:underline">회원가입</a>
         </Link>
       </p>
     </form>
