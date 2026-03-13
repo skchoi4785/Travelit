@@ -5,10 +5,10 @@
 
 /** 사용자 정보 타입 */
 export interface User {
-  id: number;
+  id: string | number;
   email: string;
   username: string;
-  created_at: string;
+  created_at?: string;
 }
 
 /** 로그인 요청 타입 */

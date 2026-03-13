@@ -12,13 +12,57 @@ datasource db {
 
 // 사용자 모델
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String       @id @default(uuid())
+  email        String       @unique
   password     String
   username     String
   refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  travelPlans  TravelPlan[]
 
   @@map("users")
+}
+
+// 여행지 모델 (Sprint 2 추가)
+model Destination {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  imageUrl    String?
+  tags        String[]
+  createdAt   DateTime     @default(now())
+
+  travelPlans TravelPlan[]
+
+  @@map("destinations")
+}
+
+// 여행 계획 모델 (Sprint 2 추가)
+model TravelPlan {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  title         String
+  startDate     DateTime
+  endDate       DateTime
+  duration      Int
+  companionType String
+  travelStyle   String?
+  environment   String?
+  status        PlanStatus  @default(PLANNING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("travel_plans")
+}
+
+// 여행 계획 상태 (Sprint 2 추가)
+enum PlanStatus {
+  PLANNING
+  ITINERARY_READY
+  COMPLETED
 }
