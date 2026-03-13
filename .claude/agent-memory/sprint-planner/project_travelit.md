@@ -9,7 +9,7 @@ type: project
 - 서비스명: Travelit
 - 목표: AI 기반 맞춤형 여행 계획 및 후기 통합 플랫폼
 - 전체 예상 기간: 약 20주 (Phase 0~3, Sprint 1~10)
-- 현재 상태: Phase 0 완료, Sprint 1 계획 완료 (2026-03-13)
+- 현재 상태: Phase 0 완료, Sprint 1 구현 완료, Sprint 2 구현 완료 (2026-03-14)
 
 **Why:** 프로젝트 컨텍스트를 기억하여 이후 스프린트 계획 수립 시 연속성 유지
 **How to apply:** 새 스프린트 계획 수립 시 이전 스프린트 번호 및 달성 사항 확인
@@ -18,7 +18,7 @@ type: project
 
 | 영역 | 기술 |
 |------|------|
-| 프론트엔드 | Next.js 14 + TypeScript + Tailwind CSS |
+| 프론트엔드 | Next.js **12.3.4** + TypeScript + Tailwind CSS (Pages Router, Node.js 14 호환) |
 | 백엔드 | NestJS + TypeScript |
 | 데이터베이스 | PostgreSQL + Prisma ORM |
 | 인증 | JWT (Access 1h, Refresh 7d) + bcrypt |
@@ -32,8 +32,8 @@ type: project
 | 스프린트 | 상태 | 주요 목표 |
 |---------|------|---------|
 | Phase 0 | ✅ 완료 | CI/CD, 브랜치 전략, 개발 환경 |
-| Sprint 1 | 📋 계획 완료 | 프로젝트 스캐폴딩 + 인증 UI/API |
-| Sprint 2 | 📋 예정 | 여행 계획 생성 플로우 + LLM 여행지 추천 |
+| Sprint 1 | ✅ 구현 완료 | 프로젝트 스캐폴딩 + 인증 UI/API |
+| Sprint 2 | ✅ 구현 완료 (2026-03-14) | 여행 계획 생성 위자드 UI + Mock LLM 여행지 추천 |
 | Sprint 3 | 📋 예정 | 동선/숙소/맛집 추천 + 여행 계획 완성 |
 | Sprint 4 | 📋 예정 | 여행 계획 조회/수정 + MVP 안정화 |
 | Sprint 5~7 | 📋 예정 | Phase 2: 지도, D&D, 예약 연동 |
@@ -47,8 +47,18 @@ type: project
 - 인증 레이어: 이메일/비밀번호 먼저, OAuth 소셜 로그인은 Backlog (PassportStrategy 추상화로 확장 용이하게 설계)
 - JWT 토큰 저장: localStorage (Sprint 1), 추후 httpOnly cookie 전환 검토
 
+## Sprint 2 핵심 주의사항
+
+- **Node.js 14 환경**: Playwright 자동 UI 검증 불가 (Node.js 18+ 필요). UI 검증은 수동 수행 필요.
+- **백엔드 미실행**: Sprint 2는 프론트엔드 화면 우선 전략으로 백엔드가 실행되지 않음. `docker compose up --build` 이후 통합 검증 필요.
+- **다음 스프린트 번호**: Sprint 3 (동선/숙소/맛집 추천 + 여행 계획 완성)
+- **Step 4의 "use client" 지시어**: Pages Router 환경에서 불필요하지만 에러 유발하지 않음 — Sprint 3에서 정리 권장.
+
 ## 반복 패턴
 
 - 각 스프린트는 Playwright MCP 검증 시나리오를 포함
 - `writing-plans` 스킬은 이 프로젝트에 존재하지 않음 → 일반 애자일 방법론 적용
 - 체크리스트는 이모지(`- ✅`, `- ⬜`) 형식 사용 (GFM `[x]`/`[ ]` 금지)
+- 프론트엔드 코드는 반드시 Next.js 12 Pages Router 기준 (`useRouter`: next/router, 동적 파라미터: `router.query`)
+- Sprint 1, 2 모두 **프론트엔드 화면 우선 + Mock 데이터** 전략. 실제 백엔드 연동은 Sprint 1-B 이후
+- Mock 데이터 전략: `frontend/src/data/mockData.ts`, localStorage로 영속성 유지
