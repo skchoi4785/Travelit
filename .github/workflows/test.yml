@@ -20,9 +20,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 의존성 설치 (prisma preinstall 스킵)
+      - name: 의존성 설치
         working-directory: backend
-        run: npm install --ignore-scripts
+        run: npm install
+
+      - name: Prisma 클라이언트 타입 생성
+        working-directory: backend
+        run: npx prisma generate
 
       - name: 단위 테스트 실행
         working-directory: backend
