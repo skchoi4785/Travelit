@@ -9,7 +9,7 @@ type: project
 - 서비스명: Travelit
 - 목표: AI 기반 맞춤형 여행 계획 및 후기 통합 플랫폼
 - 전체 예상 기간: 약 20주 (Phase 0~3, Sprint 1~10)
-- 현재 상태: Phase 0 완료, Sprint 1 구현 완료, Sprint 2 구현 완료 (2026-03-14), Sprint 3 구현 완료 (2026-03-15)
+- 현재 상태: Phase 0 완료, Sprint 1 구현 완료, Sprint 2 구현 완료 (2026-03-14), Sprint 3 구현 완료 (2026-03-15), Sprint 4 구현 완료 (2026-03-15)
 
 **Why:** 프로젝트 컨텍스트를 기억하여 이후 스프린트 계획 수립 시 연속성 유지
 **How to apply:** 새 스프린트 계획 수립 시 이전 스프린트 번호 및 달성 사항 확인
@@ -35,7 +35,7 @@ type: project
 | Sprint 1 | ✅ 구현 완료 | 프로젝트 스캐폴딩 + 인증 UI/API |
 | Sprint 2 | ✅ 구현 완료 (2026-03-14) | 여행 계획 생성 위자드 UI + Mock LLM 여행지 추천 |
 | Sprint 3 | ✅ 구현 완료 (2026-03-15) | 동선/숙소/맛집 추천 고도화 + 백엔드 단위 테스트 |
-| Sprint 4 | 📋 예정 | 여행 계획 조회/수정 + MVP 안정화 |
+| Sprint 4 | ✅ 구현 완료 (2026-03-15) | 백엔드/프론트엔드 테스트 코드 확충 (총 52개 테스트) |
 | Sprint 5~7 | 📋 예정 | Phase 2: 지도, D&D, 예약 연동 |
 | Sprint 8~10 | 📋 예정 | Phase 3: AI 후기, 영상, 구독 모델 |
 
@@ -52,6 +52,16 @@ type: project
 - **Node.js 14 환경**: Playwright 자동 UI 검증 불가 (Node.js 18+ 필요). UI 검증은 수동 수행 필요.
 - **백엔드 미실행**: Sprint 2는 프론트엔드 화면 우선 전략으로 백엔드가 실행되지 않음. `docker compose up --build` 이후 통합 검증 필요.
 - **Step 4의 "use client" 지시어**: Pages Router 환경에서 불필요 — Sprint 3에서 정리 예정.
+
+## Sprint 4 핵심 주의사항
+
+- **테스트 코드 확충 스프린트**: 기존 ROADMAP Sprint 4 목표(조회/수정)와 다르게 실행됨 — 서비스 평가 점수 향상 목적으로 테스트 코드 우선 작성
+- **백엔드 34개 테스트**: 기존 18 + 신규 16 (users.service, auth.controller, recommendations.controller, travel-plans.controller)
+- **프론트엔드 18개 테스트**: usePlanWizard 훅(13개) + AuthContext(5개) + jest 인프라 구축
+- **jest.config.js 오타**: `setupFilesAfterFramework` → 올바른 키는 `setupFilesAfterEachTestFile`. jest.setup.js 적용 여부 CI 실행 후 확인 필요.
+- **로컬 Node.js 14 제약**: 테스트 의존성 설치 실패 가능. CI(Node.js 20)에서 검증 권장.
+- **다음 스프린트**: Sprint 5 (Phase 2 시작 — 지도 시각화 + 사용자 프로필)
+- **PR**: https://github.com/skchoi4785/Travelit/pull/4 (sprint4 → develop)
 
 ## Sprint 3 핵심 주의사항
 
