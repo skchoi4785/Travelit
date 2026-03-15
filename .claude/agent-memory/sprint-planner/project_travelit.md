@@ -9,7 +9,7 @@ type: project
 - 서비스명: Travelit
 - 목표: AI 기반 맞춤형 여행 계획 및 후기 통합 플랫폼
 - 전체 예상 기간: 약 20주 (Phase 0~3, Sprint 1~10)
-- 현재 상태: Phase 0 완료, Sprint 1 구현 완료, Sprint 2 구현 완료 (2026-03-14)
+- 현재 상태: Phase 0 완료, Sprint 1 구현 완료, Sprint 2 구현 완료 (2026-03-14), Sprint 3 구현 완료 (2026-03-15)
 
 **Why:** 프로젝트 컨텍스트를 기억하여 이후 스프린트 계획 수립 시 연속성 유지
 **How to apply:** 새 스프린트 계획 수립 시 이전 스프린트 번호 및 달성 사항 확인
@@ -34,7 +34,7 @@ type: project
 | Phase 0 | ✅ 완료 | CI/CD, 브랜치 전략, 개발 환경 |
 | Sprint 1 | ✅ 구현 완료 | 프로젝트 스캐폴딩 + 인증 UI/API |
 | Sprint 2 | ✅ 구현 완료 (2026-03-14) | 여행 계획 생성 위자드 UI + Mock LLM 여행지 추천 |
-| Sprint 3 | 📋 계획 수립 완료 (2026-03-15) | 동선/숙소/맛집 추천 고도화 + 백엔드 단위 테스트 |
+| Sprint 3 | ✅ 구현 완료 (2026-03-15) | 동선/숙소/맛집 추천 고도화 + 백엔드 단위 테스트 |
 | Sprint 4 | 📋 예정 | 여행 계획 조회/수정 + MVP 안정화 |
 | Sprint 5~7 | 📋 예정 | Phase 2: 지도, D&D, 예약 연동 |
 | Sprint 8~10 | 📋 예정 | Phase 3: AI 후기, 영상, 구독 모델 |
@@ -55,10 +55,11 @@ type: project
 
 ## Sprint 3 핵심 주의사항
 
-- **테스트 파일 3개 필수**: `auth.service.spec.ts`, `recommendations.service.spec.ts`, `travel-plans.service.spec.ts` (테스트 비율 32%)
-- **테스트 환경 미구성**: 백엔드 실행 불가이므로 Jest 코드 레벨 검증만 수행, 실제 실행은 Sprint 1-B 이후
-- **위자드 확장**: Step 4 → 8단계 (totalSteps prop 변경 필요)
+- **테스트 파일 3개 완료**: `auth.service.spec.ts`(7개), `recommendations.service.spec.ts`(6개), `travel-plans.service.spec.ts`(5개)
+- **위자드 8단계 완성**: Step 1~3(기존) + Step 4(중간 확인) + Step 5~8(동선/숙소/맛집/요약)
+- **Step 4 역할 변경**: 기존 "확인 후 저장"에서 "중간 확인 + 일정 생성 트리거"로 변경됨
 - **다음 스프린트**: Sprint 4 (여행 계획 조회/수정 + MVP 안정화)
+- **PR**: https://github.com/skchoi4785/Travelit/pull/1 (sprint3 → develop)
 
 ## 반복 패턴
 
