@@ -1,0 +1,58 @@
+name: 단위 테스트
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, sprint4]
+
+jobs:
+  backend-test:
+    name: 백엔드 단위 테스트
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 20 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 의존성 설치
+        working-directory: backend
+        run: npm install
+
+      - name: Prisma 클라이언트 타입 생성
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: 단위 테스트 실행
+        working-directory: backend
+        run: npm test
+
+      - name: 커버리지 리포트 생성
+        working-directory: backend
+        run: npm run test:cov
+
+  frontend-test:
+    name: 프론트엔드 단위 테스트
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 20 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 의존성 설치
+        working-directory: frontend
+        run: npm install --legacy-peer-deps
+
+      - name: 단위 테스트 실행
+        working-directory: frontend
+        run: npm test -- --ci --passWithNoTests

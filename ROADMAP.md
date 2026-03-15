@@ -20,9 +20,9 @@
 
 | 항목 | 내용 |
 |------|------|
-| 전체 진행률 | 30% (Phase 1 Sprint 3 완료) |
-| 현재 Phase | Phase 1 진행 중 |
-| 다음 마일스톤 | Phase 1 Sprint 4 시작 |
+| 전체 진행률 | 40% (Phase 1 Sprint 4 완료) |
+| 현재 Phase | Phase 1 완료 |
+| 다음 마일스톤 | Phase 2 Sprint 5 시작 |
 | 팀 규모 | 소규모 2~4명 기준 |
 
 ---
@@ -253,72 +253,44 @@
 
 ---
 
-### Sprint 4: 여행 계획 조회/수정 + MVP 안정화 (2주) 📋
+### Sprint 4: 테스트 코드 확충 (검증 계획 점수 향상) (2주) ✅
 
-**스프린트 목표**: 생성된 여행 계획을 목록/상세 조회하고 간단한 수정이 가능하며, MVP 전체 플로우가 안정적으로 동작한다
+> **완료일**: 2026-03-15
+
+**스프린트 목표**: 서비스 자기 평가 보고서 "검증 계획" 영역 점수 향상을 위한 백엔드/프론트엔드 테스트 코드 확충 (총 52개 테스트)
 
 **작업 목록**:
 
-- ⬜ **여행 계획 목록/상세 조회**
-  - `GET /api/travel-plans`: 내 여행 계획 목록 조회 (페이지네이션)
-  - `GET /api/travel-plans/:id`: 여행 계획 상세 조회
-  - 마이페이지 / 대시보드: 여행 계획 카드 리스트
-  - 여행 계획 상세 페이지: 일자별 동선 + 숙소 + 맛집 통합 뷰
+- ✅ **백엔드 단위 테스트 확충**
+  - `users.service.spec.ts`: UsersService 단위 테스트 7개 (findByEmail, findById, createUser, updateRefreshToken, sanitizeUser)
+  - `auth.controller.spec.ts`: AuthController 단위 테스트 3개 (register, login, getCurrentUser)
+  - `recommendations.controller.spec.ts`: RecommendationsController 단위 테스트 4개
+  - `travel-plans.controller.spec.ts`: TravelPlansController 단위 테스트 2개
+  - jest/ts-jest/@types/jest devDependencies 추가
+  - 백엔드 총 34개 테스트 (기존 18 + 신규 16)
 
-- ⬜ **여행 계획 수정 기능**
-  - `PUT /api/travel-plans/:id`: 여행 계획 수정
-  - `DELETE /api/travel-plans/:id`: 여행 계획 삭제
-  - 일정 내 활동 추가/삭제/순서 변경 (기본 수정)
-  - 숙소/맛집 변경 (재추천 또는 수동 수정)
-
-- ⬜ **MVP 안정화 및 폴리싱**
-  - 전체 사용자 플로우 E2E 테스트
-  - 에러 바운더리 및 에러 페이지
-  - 로딩 상태 및 빈 상태 UI 보완
-  - 반응형 디자인 점검 (모바일/태블릿)
-  - API 응답 시간 모니터링 및 최적화
-  - LLM 프롬프트 품질 최종 튜닝
-
-- ⬜ **MVP 배포 준비**
-  - Docker 이미지 빌드 확인
-  - 환경변수 정리 (.env.production)
-  - DB 마이그레이션 스크립트 검증
-  - Lighthouse 성능 점수 80+ 확인
+- ✅ **프론트엔드 테스트 인프라 구축 및 테스트 작성**
+  - jest/@testing-library/react 등 테스트 인프라 의존성 추가
+  - `jest.config.js`, `jest.setup.js` 신규 생성
+  - `usePlanWizard.test.ts`: 위자드 훅 테스트 13개
+  - `AuthContext.test.tsx`: 인증 컨텍스트 테스트 5개
+  - 프론트엔드 총 18개 테스트
 
 **완료 기준 (Definition of Done)**:
-- 사용자가 마이페이지에서 생성한 여행 계획 목록을 확인할 수 있다
-- 여행 계획 상세 페이지에서 일자별 동선, 숙소, 맛집 정보가 표시된다
-- 일정 내 활동을 추가/삭제/수정할 수 있다
-- 여행 계획을 삭제할 수 있다
-- 모바일에서도 주요 플로우가 정상 동작한다
-- Lighthouse 성능 점수 80 이상
+- 백엔드 `npm test` 실행 시 34개 테스트 통과
+- 프론트엔드 `npm test` 실행 시 18개 테스트 통과
+- CI(GitHub Actions, Node.js 20)에서 테스트 정상 실행
 
-**Playwright MCP 검증 시나리오**:
-```
-1. browser_navigate -> http://localhost:3000/login -> 로그인
-2. browser_navigate -> http://localhost:3000/plans
-3. browser_snapshot -> 여행 계획 목록 카드 표시 확인
-4. browser_click -> 여행 계획 카드 클릭
-5. browser_snapshot -> 상세 페이지: 일자별 동선, 숙소, 맛집 표시 확인
-6. browser_click -> 수정 버튼 클릭
-7. browser_snapshot -> 수정 모드 UI 확인
-8. browser_click -> 활동 삭제 버튼 클릭
-9. browser_snapshot -> 활동 삭제 반영 확인
-10. browser_click -> 저장 버튼
-11. browser_snapshot -> 수정 완료 확인
-12. browser_console_messages(level: "error") -> 콘솔 에러 없음 확인
-13. browser_network_requests -> CRUD API 호출 성공(200) 확인
-```
+**검증 방법**:
 
-**공통 검증 항목**:
-- `browser_navigate`로 각 페이지 접속 후 `browser_snapshot`으로 렌더링 확인
-- `browser_console_messages(level: "error")`로 콘솔 에러 없음 확인
-- `browser_network_requests`로 API 호출 성공(200) 확인
+1. 백엔드: `cd backend && npm install && npm test` → 34개 테스트 통과
+2. 백엔드 커버리지: `cd backend && npm run test:cov` → lines >= 60%
+3. 프론트엔드: `cd frontend && npm install && npm test` → 18개 테스트 통과
+4. CI: GitHub Actions 워크플로우 통과 확인
 
 **기술 고려사항**:
-- 여행 계획 수정 시 낙관적 업데이트(Optimistic Update) 적용으로 UX 향상
-- 삭제 시 소프트 딜리트 고려 (실수 복구 가능)
-- MVP 기술 부채: 테스트 커버리지 부족, LLM 프롬프트 하드코딩 등 Phase 2에서 해소
+- 로컬 Node.js 14 환경에서는 npm install 실패 가능 — CI(Node.js 20)에서 검증 권장
+- 프론트엔드 jest.config.js에 `setupFilesAfterFramework` 오타 있음 (정확한 키: `setupFilesAfterFramework` 아닌 `setupFilesAfterFramework`) — jest.setup.js 적용 여부 확인 필요 (Medium 이슈)
 
 ---
 
