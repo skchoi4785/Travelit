@@ -11,14 +11,22 @@ const STEP_TITLES = [
   '기본 정보를 입력해주세요',
   '여행 스타일을 선택해주세요',
   'AI가 추천하는 여행지',
-  '여행 계획을 확인해주세요',
+  '여행지를 확인해주세요',
+  '일자별 여행 동선',
+  '숙소를 선택해주세요',
+  '맛집을 선택해주세요',
+  '최종 여행 계획 확인',
 ];
 
 const STEP_SUBTITLES = [
   '언제, 누구와 여행하실 건가요?',
   '어떤 스타일의 여행을 원하시나요?',
   '입력하신 선호도를 바탕으로 추천 여행지를 선정했어요',
-  '선택하신 내용을 확인하고 여행 계획을 만들어 보세요',
+  '선택하신 여행지와 정보를 확인하고 일정을 생성하세요',
+  'AI가 최적의 동선을 구성했어요',
+  '여행 스타일에 맞는 숙소를 추천했어요',
+  '여행 일정에 맞는 맛집을 추천했어요',
+  '전체 여행 계획을 확인하고 저장하세요',
 ];
 
 interface WizardLayoutProps {
@@ -40,7 +48,7 @@ export default function WizardLayout({ currentStep, children }: WizardLayoutProp
               취소하고 돌아가기
             </a>
           </Link>
-          <span className="text-sm text-gray-400">{currentStep} / 4</span>
+          <span className="text-sm text-gray-400">{currentStep} / 8</span>
         </div>
 
         {/* 프로그레스 바 */}

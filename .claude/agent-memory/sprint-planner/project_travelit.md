@@ -34,7 +34,7 @@ type: project
 | Phase 0 | ✅ 완료 | CI/CD, 브랜치 전략, 개발 환경 |
 | Sprint 1 | ✅ 구현 완료 | 프로젝트 스캐폴딩 + 인증 UI/API |
 | Sprint 2 | ✅ 구현 완료 (2026-03-14) | 여행 계획 생성 위자드 UI + Mock LLM 여행지 추천 |
-| Sprint 3 | 📋 예정 | 동선/숙소/맛집 추천 + 여행 계획 완성 |
+| Sprint 3 | 📋 계획 수립 완료 (2026-03-15) | 동선/숙소/맛집 추천 고도화 + 백엔드 단위 테스트 |
 | Sprint 4 | 📋 예정 | 여행 계획 조회/수정 + MVP 안정화 |
 | Sprint 5~7 | 📋 예정 | Phase 2: 지도, D&D, 예약 연동 |
 | Sprint 8~10 | 📋 예정 | Phase 3: AI 후기, 영상, 구독 모델 |
@@ -51,8 +51,14 @@ type: project
 
 - **Node.js 14 환경**: Playwright 자동 UI 검증 불가 (Node.js 18+ 필요). UI 검증은 수동 수행 필요.
 - **백엔드 미실행**: Sprint 2는 프론트엔드 화면 우선 전략으로 백엔드가 실행되지 않음. `docker compose up --build` 이후 통합 검증 필요.
-- **다음 스프린트 번호**: Sprint 3 (동선/숙소/맛집 추천 + 여행 계획 완성)
-- **Step 4의 "use client" 지시어**: Pages Router 환경에서 불필요하지만 에러 유발하지 않음 — Sprint 3에서 정리 권장.
+- **Step 4의 "use client" 지시어**: Pages Router 환경에서 불필요 — Sprint 3에서 정리 예정.
+
+## Sprint 3 핵심 주의사항
+
+- **테스트 파일 3개 필수**: `auth.service.spec.ts`, `recommendations.service.spec.ts`, `travel-plans.service.spec.ts` (테스트 비율 32%)
+- **테스트 환경 미구성**: 백엔드 실행 불가이므로 Jest 코드 레벨 검증만 수행, 실제 실행은 Sprint 1-B 이후
+- **위자드 확장**: Step 4 → 8단계 (totalSteps prop 변경 필요)
+- **다음 스프린트**: Sprint 4 (여행 계획 조회/수정 + MVP 안정화)
 
 ## 반복 패턴
 

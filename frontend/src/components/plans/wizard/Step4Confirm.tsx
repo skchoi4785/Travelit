@@ -1,12 +1,9 @@
-"use client";
-
 /**
- * Step 4: 선택 완료 확인
- * 선택된 여행지와 입력 정보를 요약하여 표시합니다.
+ * Step 4: 여행지 선택 확인
+ * 선택된 여행지를 확인하고 "일정 생성하기"를 누르면 itinerary/숙소/맛집을 병렬 로드합니다.
  */
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import { Destination, WizardFormData } from '@/types/plan';
 
 const COMPANION_LABELS: Record<string, string> = {
@@ -37,13 +34,14 @@ const DESTINATION_GRADIENTS: Record<string, string> = {
 interface Step4Props {
   selectedDestination: Destination;
   formData: WizardFormData;
+  isLoading: boolean;
   onPrev: () => void;
-  onConfirm: () => void;
+  /** 일정/숙소/맛집 병렬 로드 후 다음 단계로 이동 */
+  onNext: () => Promise<void>;
 }
 
-export default function Step4Confirm({ selectedDestination, formData, onPrev, onConfirm }: Step4Props) {
-  const router = useRouter();
-  const [isCreating, setIsCreating] = useState(false);
+export default function Step4Confirm({ selectedDestination, formData, isLoading, onPrev, onNext }: Step4Props) {
+  const [isFetching, setIsFetching] = useState(false);
 
   const gradient = DESTINATION_GRADIENTS[selectedDestination.name] || 'from-teal-400 to-blue-500';
 
@@ -59,18 +57,17 @@ export default function Step4Confirm({ selectedDestination, formData, onPrev, on
     return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
   };
 
-  const handleCreate = async () => {
-    setIsCreating(true);
+  const handleNext = async () => {
+    setIsFetching(true);
     try {
-      onConfirm();
-      await router.push('/plans');
+      await onNext();
     } finally {
-      setIsCreating(false);
+      setIsFetching(false);
     }
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-5">
       {/* 선택된 여행지 요약 카드 */}
       <div className={`rounded-xl overflow-hidden bg-gradient-to-br ${gradient}`}>
         <div className="p-6 text-white">
@@ -97,7 +94,6 @@ export default function Step4Confirm({ selectedDestination, formData, onPrev, on
       {/* 여행 정보 요약 */}
       <div className="bg-gray-50 rounded-xl p-5 space-y-4">
         <h4 className="text-sm font-semibold text-gray-700">여행 정보</h4>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-gray-500 mb-1">출발일</p>
@@ -109,9 +105,7 @@ export default function Step4Confirm({ selectedDestination, formData, onPrev, on
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">여행 기간</p>
-            <p className="text-sm font-medium text-gray-900">
-              {formData.duration - 1}박 {formData.duration}일
-            </p>
+            <p className="text-sm font-medium text-gray-900">{formData.duration - 1}박 {formData.duration}일</p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">동반자</p>
@@ -123,16 +117,16 @@ export default function Step4Confirm({ selectedDestination, formData, onPrev, on
       </div>
 
       {/* 선호도 요약 */}
-      <div className="bg-gray-50 rounded-xl p-5 space-y-3">
+      <div className="bg-gray-50 rounded-xl p-4 space-y-2">
         <h4 className="text-sm font-semibold text-gray-700">선호도</h4>
         <div className="flex flex-wrap gap-2">
           {formData.travelStyle && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
               🏃 {TRAVEL_STYLE_LABELS[formData.travelStyle]}
             </span>
           )}
           {formData.environment && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
               🌍 {ENVIRONMENT_LABELS[formData.environment]}
             </span>
           )}
@@ -144,32 +138,27 @@ export default function Step4Confirm({ selectedDestination, formData, onPrev, on
         <button
           type="button"
           onClick={onPrev}
-          disabled={isCreating}
+          disabled={isFetching}
           className="flex-1 py-3.5 rounded-xl text-base font-semibold border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
           ← 다시 선택
         </button>
         <button
           type="button"
-          onClick={handleCreate}
-          disabled={isCreating}
-          className={[
-            'flex-[2] py-3.5 rounded-xl text-base font-semibold transition-all duration-200',
-            !isCreating
-              ? 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm hover:shadow-md'
-              : 'bg-teal-400 text-white cursor-not-allowed',
-          ].join(' ')}
+          onClick={handleNext}
+          disabled={isFetching || isLoading}
+          className="flex-[2] py-3.5 rounded-xl text-base font-semibold bg-teal-600 text-white hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isCreating ? (
+          {isFetching ? (
             <span className="flex items-center justify-center gap-2">
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              생성 중...
+              AI가 일정을 생성 중…
             </span>
           ) : (
-            '🗺️ 여행 계획 만들기'
+            '🗺️ 일정 생성하기'
           )}
         </button>
       </div>

@@ -55,6 +55,7 @@ export interface WizardFormData {
 export interface Activity {
   time: string;
   place: string;
+  description?: string;
   duration: string;
   transport: string;
 }
@@ -73,6 +74,8 @@ export interface Accommodation {
   type: string;
   priceRange: string;
   description: string;
+  features: string[];
+  location: string;
 }
 
 /** 맛집 추천 */
@@ -82,4 +85,13 @@ export interface Restaurant {
   cuisine: string;
   priceRange: string;
   description: string;
+  features: string[];
+  recommendedDays: number[];
+}
+
+/** 위자드 Step 5~8 선택 데이터 */
+export interface WizardSelections {
+  selectedAccommodation: Accommodation | null;
+  selectedRestaurants: Restaurant[];
+  itinerary: ItineraryDay[];
 }
