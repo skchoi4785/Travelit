@@ -7,6 +7,21 @@
 
 ## 현재 미완료 항목
 
+### Hotfix: app.module.ts 모듈 미등록 404 버그 수정 및 서비스 리뷰 문서 개선 (2026-03-15)
+
+PR: https://github.com/skchoi4785/Travelit/pull/3
+
+- ✅ 자동 검증 완료 항목:
+  - 코드 리뷰: Critical/High 이슈 없음
+
+- ⬜ 수동 검증 필요 항목:
+  - `docker compose up --build` (코드 반영 및 빌드 확인)
+  - `/api/recommendations/*` 엔드포인트 동작 확인 (모듈 등록 수정 검증)
+  - `/api/travel-plans/*` 엔드포인트 동작 확인 (모듈 등록 수정 검증)
+  - master merge 후 develop 역머지 수행
+
+---
+
 ### Sprint 3 — 동선/숙소/맛집 추천 위자드 확장 및 백엔드 단위 테스트 (2026-03-15)
 
 **브랜치**: `sprint3` → `develop` PR #1 생성 완료
