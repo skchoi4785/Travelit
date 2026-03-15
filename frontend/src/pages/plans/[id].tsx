@@ -181,3 +181,12 @@ export default function PlanDetailPage() {
     </div>
   );
 }
+
+/** static export 호환: 빌드 시 동적 경로 없이 클라이언트에서 처리 */
+export async function getStaticPaths() {
+  return { paths: [], fallback: false };
+}
+
+export async function getStaticProps() {
+  return { props: {} };
+}

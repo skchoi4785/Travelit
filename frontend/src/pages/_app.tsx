@@ -3,6 +3,8 @@
  * AuthProvider와 공통 레이아웃(Header, Footer)을 모든 페이지에 적용합니다.
  */
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { AuthProvider } from '../contexts/AuthContext';
@@ -10,7 +12,32 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import '../styles/globals.css';
 
-export default function App({ Component, pageProps }: AppProps) {
+/** GitHub Pages SPA 리다이렉트 처리 — 404.html에서 넘어온 경로를 복원 */
+function useSpaRedirect() {
+  const router = useRouter();
+  useEffect(() => {
+    const search = window.location.search;
+    if (search && search.startsWith('?/')) {
+      const path = search.slice(2).replace(/~and~/g, '&');
+      router.replace('/' + path, undefined, { shallow: true });
+    }
+  }, [router]);
+}
+
+function AppInner({ Component, pageProps }: AppProps) {
+  useSpaRedirect();
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow">
+        <Component {...pageProps} />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export default function App(props: AppProps) {
   return (
     <AuthProvider>
       <Head>
@@ -19,13 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          <Component {...pageProps} />
-        </main>
-        <Footer />
-      </div>
+      <AppInner {...props} />
     </AuthProvider>
   );
 }
