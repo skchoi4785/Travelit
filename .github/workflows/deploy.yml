@@ -7,11 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # TODO: 아래 이미지명을 프로젝트에 맞게 수정하세요
-  # 예시: BACKEND_IMAGE: ghcr.io/your-org/your-project-backend
-  BACKEND_IMAGE: ghcr.io/YOUR_GITHUB_ORG/YOUR_PROJECT-backend
-  FRONTEND_IMAGE: ghcr.io/YOUR_GITHUB_ORG/YOUR_PROJECT-frontend
-  NGINX_IMAGE: ghcr.io/YOUR_GITHUB_ORG/YOUR_PROJECT-nginx
+  BACKEND_IMAGE: ghcr.io/skchoi4785/travelit-backend
+  FRONTEND_IMAGE: ghcr.io/skchoi4785/travelit-frontend
 
 jobs:
   build-and-push:
@@ -44,13 +41,11 @@ jobs:
             type=sha,prefix=,format=short
             type=raw,value=latest
 
-      # TODO: Dockerfile 경로를 프로젝트에 맞게 수정하세요
       - name: 백엔드 이미지 빌드 & push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: docker/backend/Dockerfile.prod
-          target: runtime
+          context: ./backend
+          file: backend/Dockerfile
           push: true
           tags: |
             ${{ env.BACKEND_IMAGE }}:latest
@@ -59,25 +54,14 @@ jobs:
       - name: 프론트엔드 이미지 빌드 & push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: docker/frontend/Dockerfile.prod
-          target: runtime
+          context: ./frontend
+          file: frontend/Dockerfile
           push: true
           tags: |
             ${{ env.FRONTEND_IMAGE }}:latest
             ${{ env.FRONTEND_IMAGE }}:${{ steps.meta.outputs.version }}
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-
-      - name: nginx 이미지 빌드 & push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/nginx/Dockerfile
-          push: true
-          tags: |
-            ${{ env.NGINX_IMAGE }}:latest
-            ${{ env.NGINX_IMAGE }}:${{ steps.meta.outputs.version }}
 
   deploy:
     name: 프로덕션 서버 배포
@@ -102,5 +86,5 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
-            docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+            docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy
             docker image prune -f

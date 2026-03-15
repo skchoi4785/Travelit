@@ -9,7 +9,7 @@
 | 기간 | 2주 |
 | 브랜치 | `sprint1` (develop 기반 분기) |
 | 담당 | 전체 팀 |
-| 상태 | 📋 예정 |
+| 상태 | 🔄 진행 중 |
 
 ---
 
@@ -23,14 +23,26 @@
 
 ## 구현 범위
 
-### 포함 항목
+> **수정 사항 (2026-03-13)**: 화면 우선 확인 전략으로 변경.
+> 백엔드 구현은 프론트엔드 화면 검증 완료 후 별도 진행합니다.
 
-- 프론트엔드 프로젝트 초기화 (Next.js 14 + TypeScript + Tailwind CSS)
-- 백엔드 프로젝트 초기화 (NestJS + TypeScript + PostgreSQL + Prisma)
-- 사용자 인증 시스템 백엔드 (회원가입, 로그인, JWT, bcrypt)
+### Sprint 1-A: 프론트엔드 화면 구현 (완료) ✅
+
+- 프론트엔드 프로젝트 초기화 (Next.js 12 + TypeScript + Tailwind CSS)
+  - Node.js 14 호환: Next.js 14 → **12.3.4** 다운그레이드
+  - App Router → **Pages Router** 전환
+- Mock 인증 (백엔드 없이 UI 흐름 검증 가능)
 - 인증 프론트엔드 UI (회원가입 페이지, 로그인 페이지, AuthContext)
-- 공통 레이아웃 컴포넌트 및 라우팅 구조
-- 글로벌 에러 핸들러 및 통일된 API 응답 포맷
+- 공통 레이아웃 컴포넌트 (Header, Footer, Navigation)
+- 여행 계획 목록/신규 페이지 뼈대
+
+### Sprint 1-B: 백엔드 구현 (예정) 📋
+
+- 백엔드 프로젝트 초기화 (NestJS + TypeScript + PostgreSQL + Prisma)
+  - 코드는 `backend/` 디렉토리에 작성 완료, 실행 환경 준비 후 진행
+- 사용자 인증 시스템 백엔드 (회원가입, 로그인, JWT, bcrypt)
+- Mock 인증을 실제 API 호출로 교체
+- Docker 환경 구성 (Node.js 20 + Docker Desktop 설치 필요)
 
 ### 제외 항목
 
