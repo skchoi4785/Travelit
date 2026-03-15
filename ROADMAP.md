@@ -63,21 +63,21 @@
 
 **작업 목록**:
 
-- ⬜ **프론트엔드 프로젝트 초기화**
+- ✅ **프론트엔드 프로젝트 초기화**
   - Next.js + TypeScript 프로젝트 생성
   - Tailwind CSS 설정
   - ESLint + Prettier 설정
   - 공통 레이아웃 컴포넌트 (Header, Footer, Navigation)
   - 페이지 라우팅 구조 설정 (/, /login, /register, /plans, /plans/new)
 
-- ⬜ **백엔드 프로젝트 초기화**
+- ✅ **백엔드 프로젝트 초기화**
   - NestJS + TypeScript 프로젝트 생성
   - PostgreSQL + Prisma ORM 설정
   - 환경변수 관리 (.env.example)
   - 글로벌 에러 핸들러 및 응답 포맷 통일
   - CORS 설정
 
-- ⬜ **사용자 인증 시스템 구현**
+- ✅ **사용자 인증 시스템 구현**
   - User 데이터 모델 설계 (Prisma schema)
   - `POST /api/auth/register`: 회원가입 API (이메일, 비밀번호, 사용자명)
   - `POST /api/auth/login`: 로그인 API (JWT 발급)
@@ -85,7 +85,7 @@
   - JWT 미들웨어 (인증 가드)
   - 비밀번호 해싱 (bcrypt)
 
-- ⬜ **인증 프론트엔드 UI**
+- ✅ **인증 프론트엔드 UI**
   - 회원가입 페이지 (이메일, 비밀번호, 사용자명 입력 폼)
   - 로그인 페이지 (이메일, 비밀번호 입력 폼)
   - AuthContext (JWT 토큰 관리, 로그인 상태 유지)

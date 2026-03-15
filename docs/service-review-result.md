@@ -49,19 +49,7 @@
 
 **근거 문서**: `CLAUDE.md`
 
-```
-포함 섹션:
-- 저장소 정보 및 원격 URL
-- 언어 및 커뮤니케이션 규칙 (한국어 코드 주석, 커밋 메시지)
-- Git 브랜치 전략 (sprint / hotfix / develop / main 흐름)
-- Bash 명령 실행 규칙
-- 개발 프로세스 규칙 (Hotfix vs Sprint 의사결정 기준)
-- 스프린트/핫픽스 개발 시 에이전트 활용 가이드
-- 검증 원칙, 배포 후 수동 작업, 체크리스트 형식 규칙
-- Notion 기술 문서 관리 방침
-```
-
-AI 에이전트가 코드 생성 시 따라야 할 컨벤션, 브랜치 전략, 에이전트 활용 방식이 구체적으로 명시되어 있습니다. 실제 개발 전 과정에서 Claude Code가 이 파일을 기반으로 코드·커밋·PR을 생성했습니다.
+`CLAUDE.md`에는 저장소 정보, 언어 규칙(한국어 주석/커밋), Git 브랜치 전략, Bash 실행 규칙, Hotfix vs Sprint 의사결정 기준, 에이전트 활용 가이드, 검증·배포 원칙, Notion 문서 관리 방침이 구체적으로 명시되어 있습니다. 실제 개발 전 과정에서 Claude Code가 이 파일을 기반으로 코드·커밋·PR을 생성했습니다.
 
 ---
 
@@ -165,12 +153,7 @@ NestJS 모듈 시스템으로 도메인별 완전한 캡슐화를 구현했습�
 
 **Mock → 실제 전환 준비**
 
-```typescript
-// 모든 API 호출 위치에 TODO 주석으로 실제 연동 지점 명시
-// TODO: POST /api/recommendations/itinerary 호출로 교체
-// TODO: Promise.all([fetchItinerary, fetchAccommodations, fetchRestaurants]) 병렬 처리 준비됨
-await new Promise((resolve) => setTimeout(resolve, 2000));
-```
+모든 API 호출 위치에 `// TODO: POST /api/recommendations/itinerary 호출로 교체` 형태의 주석을 삽입했으며, `Promise.all()` 병렬 처리 구조를 미리 잡아두어 실제 LLM 연동 시 교체 범위를 최소화할 수 있습니다.
 
 ---
 
@@ -294,25 +277,22 @@ await new Promise((resolve) => setTimeout(resolve, 2000));
 | `travel-plans.service.spec.ts` | 5개 | 계획 생성 반환 타입, title 포맷, 고유 ID 생성, 목록 조회 배열 반환 |
 | **합계** | **18개** | |
 
-**테스트 설정** (`backend/package.json`)
-
-```json
-"scripts": {
-  "test": "jest",
-  "test:cov": "jest --coverage"
-},
-"jest": {
-  "coverageThreshold": {
-    "global": { "lines": 60 }
-  }
-}
-```
+**테스트 설정**: `backend/package.json`의 Jest 설정에서 `test:cov` 스크립트와 `coverageThreshold.global.lines: 60`으로 커버리지 임계값을 강제합니다.
 
 **테스트 패턴**
 
 - `@nestjs/testing`의 `Test.createTestingModule()` 사용
 - `jest.fn()`으로 외부 의존성(DB, JWT) Mock 처리
 - `beforeEach`에 `jest.clearAllMocks()` — 테스트 간 상태 격리
+
+**테스트 격차 분석**
+
+| 영역 | 현황 | 격차 | 개선 방향 |
+|------|------|------|----------|
+| 백엔드 단위 테스트 | 18개 | `app.module.ts` 모듈 미등록 미탐지 | 모듈 등록 검증 테스트 추가 |
+| 프론트엔드 테스트 | 0개 | 컴포넌트/훅 테스트 전무 | React Testing Library로 위자드 핵심 Step 테스트 |
+| E2E 테스트 | 0개 | Playwright 시나리오 문서만 존재 | Sprint 4에서 로그인→위자드 Step 1~3 자동화 |
+| 커버리지 | 백엔드 60% | 프론트엔드 0% | 프론트엔드 40% 시작점 설정 |
 
 ---
 
@@ -324,33 +304,26 @@ await new Promise((resolve) => setTimeout(resolve, 2000));
 
 | 파일 | 트리거 | 역할 |
 |------|--------|------|
-| `.github/workflows/ci.yml` | PR / push(develop, sprint*) | Node.js 20, npm ci, Jest 테스트 자동 실행 |
+| `.github/workflows/ci.yml` | PR / push(develop, sprint*) | Node.js 20, npm ci, PostgreSQL 컨테이너, Jest 테스트 자동 실행 |
 | `.github/workflows/deploy.yml` | push(main) | Docker 이미지 빌드 → GHCR push → Lightsail SSH 배포 |
 | `.github/workflows/pages.yml` | push(master) | Next.js static export → GitHub Pages 자동 배포 |
 
-**CI 파이프라인 상세** (`ci.yml`)
+**브랜치 전략**: `sprint{n} → develop (PR) → 로컬 스테이징 검증 → master (PR) → 자동 배포`, `hotfix/* → master (긴급) → develop (역머지)`
 
-```yaml
-- Node.js 20 설정 (actions/setup-node@v4)
-- npm ci (의존성 재현성 보장)
-- PostgreSQL 서비스 컨테이너 (테스트 DB)
-- npm test (Jest 실행)
-```
+---
 
-**CD 파이프라인 상세** (`pages.yml`)
+### 5-3. 배포 서비스 수동 검증 체크리스트
 
-```yaml
-- npm run export (Next.js 정적 빌드)
-- .nojekyll 추가
-- peaceiris/actions-gh-pages@v3 → gh-pages 브랜치 배포
-```
+배포된 서비스(https://skchoi4785.github.io/Travelit/)에 대해 다음 항목을 수동으로 검증합니다.
 
-**브랜치 전략**
-
-```
-sprint{n} → develop (PR) → 로컬 스테이징 검증 → master (PR) → 자동 배포
-hotfix/*  → master (긴급) → develop (역머지)
-```
+- ⬜ 랜딩 페이지 접속 및 정상 렌더링 확인
+- ⬜ 회원가입 플로우 (이메일, 비밀번호, 사용자명 입력 → 계정 생성)
+- ⬜ 로그인 플로우 (JWT 토큰 발급 및 클라이언트 저장 확인)
+- ⬜ 여행 계획 위자드 Step 1~8 전체 동작 확인
+- ⬜ 여행 계획 목록 페이지 정상 표시
+- ⬜ 여행 계획 상세 페이지 (타임라인, 숙소, 맛집 표시)
+- ⬜ 모바일 뷰포트(375px) 레이아웃 깨짐 없음 확인
+- ⬜ 브라우저 콘솔 에러 없음 확인
 
 ---
 
@@ -359,11 +332,11 @@ hotfix/*  → master (긴급) → develop (역머지)
 | 평가 영역 | 배점 | 자체 평가 | 근거 |
 |-----------|------|-----------|------|
 | AI-Native 문서화 체계 | 30점 | 27점 | PRD/README/ROADMAP/CLAUDE.md 완비, 스프린트 문서 3개, 커밋 이력 추적 가능. 개발 일지 상세도 소폭 보완 여지 있음 |
-| 기술 구현력 | 30점 | 26점 | 명확한 관심사 분리, TypeScript 타입 안전성, NestJS 모듈 아키텍처. 실제 LLM 미연동 상태로 백엔드 통합 테스트 미비 |
+| 기술 구현력 | 30점 | 24점 | 명확한 관심사 분리, TypeScript 타입 안전성, NestJS 모듈 아키텍처. `app.module.ts` 모듈 미등록으로 백엔드 엔드포인트 절반이 런타임 404 상태였음 |
 | 완성도 및 UX | 15점 | 13점 | 8단계 위자드 전 플로우 동작, 스켈레톤/로딩 UX, 반응형 적용. 모바일 실기기 테스트 보완 필요 |
 | 아이디어 및 활용 가치 | 10점 | 9점 | 실재하는 문제, 차별화 명확. LLM 실연동 후 실증 데이터 확보 시 만점 가능 |
-| 검증 계획 | 15점 | 12점 | 18개 단위 테스트, CI/CD 3개 워크플로우. 프론트엔드 테스트 미비, 커버리지 임계값 60% 설정 |
-| **합계** | **100점** | **87점** | |
+| 검증 계획 | 15점 | 10점 | 18개 단위 테스트, CI/CD 3개 워크플로우. 기존 테스트가 모듈 등록 오류를 탐지하지 못했으며 프론트엔드 테스트 전무 |
+| **합계** | **100점** | **83점** | |
 
 ### 보완 포인트
 

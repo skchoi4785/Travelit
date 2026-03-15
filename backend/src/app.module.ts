@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { RecommendationsModule } from './recommendations/recommendations.module';
+import { TravelPlansModule } from './travel-plans/travel-plans.module';
 
 /**
  * 애플리케이션 루트 모듈
@@ -24,6 +26,12 @@ import { UsersModule } from './users/users.module';
 
     // 사용자 모듈
     UsersModule,
+
+    // 추천 모듈 (여행지, 일정, 숙소, 맛집 추천)
+    RecommendationsModule,
+
+    // 여행 계획 모듈 (여행 계획 CRUD)
+    TravelPlansModule,
   ],
 })
 export class AppModule {}
