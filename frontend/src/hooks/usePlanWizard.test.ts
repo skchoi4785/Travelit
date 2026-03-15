@@ -3,7 +3,7 @@
  * 위자드 상태 관리 로직 검증
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { usePlanWizard, TOTAL_STEPS } from './usePlanWizard';
 
 // localStorage Mock
