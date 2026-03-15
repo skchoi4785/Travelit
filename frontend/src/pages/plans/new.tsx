@@ -1,6 +1,6 @@
 /**
  * 여행 계획 생성 위자드 진입 페이지 (/plans/new)
- * 4단계 위자드로 여행 계획을 생성합니다.
+ * 8단계 위자드로 여행 계획을 생성합니다.
  */
 
 import React, { useEffect } from 'react';
@@ -12,6 +12,10 @@ import Step1BasicInfo from '@/components/plans/wizard/Step1BasicInfo';
 import Step2Preferences from '@/components/plans/wizard/Step2Preferences';
 import Step3Recommendations from '@/components/plans/wizard/Step3Recommendations';
 import Step4Confirm from '@/components/plans/wizard/Step4Confirm';
+import Step5Itinerary from '@/components/plans/wizard/Step5Itinerary';
+import Step6Accommodations from '@/components/plans/wizard/Step6Accommodations';
+import Step7Restaurants from '@/components/plans/wizard/Step7Restaurants';
+import Step8Summary from '@/components/plans/wizard/Step8Summary';
 
 export default function NewPlanPage() {
   const router = useRouter();
@@ -22,12 +26,22 @@ export default function NewPlanPage() {
     formData,
     selectedDestination,
     recommendations,
+    itinerary,
+    selectedAccommodation,
+    selectedRestaurants,
+    accommodations,
+    restaurants,
     isLoading,
     goToNextStep,
     goToPrevStep,
     updateFormData,
     selectDestination,
     fetchRecommendations,
+    fetchItinerary,
+    fetchAccommodations,
+    fetchRestaurants,
+    selectAccommodation,
+    toggleRestaurant,
     createPlan,
   } = usePlanWizard();
 
@@ -46,9 +60,15 @@ export default function NewPlanPage() {
     );
   }
 
-  /** Step 2 → Step 3: 추천 데이터 로드 후 단계 이동 */
-  const handleFetchAndNext = async () => {
+  /** Step 2 → Step 3: 여행지 추천 로드 후 단계 이동 */
+  const handleFetchRecommendationsAndNext = async () => {
     await fetchRecommendations();
+    goToNextStep();
+  };
+
+  /** Step 4 → Step 5: 일정/숙소/맛집 병렬 로드 후 단계 이동 */
+  const handleFetchItineraryAndNext = async () => {
+    await Promise.all([fetchItinerary(), fetchAccommodations(), fetchRestaurants()]);
     goToNextStep();
   };
 
@@ -66,7 +86,7 @@ export default function NewPlanPage() {
         <Step2Preferences
           formData={formData}
           onUpdate={updateFormData}
-          onNext={handleFetchAndNext}
+          onNext={handleFetchRecommendationsAndNext}
           onPrev={goToPrevStep}
           isLoading={isLoading}
         />
@@ -88,8 +108,52 @@ export default function NewPlanPage() {
         <Step4Confirm
           selectedDestination={selectedDestination}
           formData={formData}
+          isLoading={isLoading}
           onPrev={goToPrevStep}
-          onConfirm={createPlan}
+          onNext={handleFetchItineraryAndNext}
+        />
+      )}
+
+      {currentStep === 5 && (
+        <Step5Itinerary
+          itinerary={itinerary}
+          isLoading={isLoading}
+          onNext={goToNextStep}
+          onPrev={goToPrevStep}
+        />
+      )}
+
+      {currentStep === 6 && (
+        <Step6Accommodations
+          accommodations={accommodations}
+          selectedAccommodation={selectedAccommodation}
+          isLoading={isLoading}
+          onSelect={selectAccommodation}
+          onNext={goToNextStep}
+          onPrev={goToPrevStep}
+        />
+      )}
+
+      {currentStep === 7 && (
+        <Step7Restaurants
+          restaurants={restaurants}
+          selectedRestaurants={selectedRestaurants}
+          isLoading={isLoading}
+          onToggle={toggleRestaurant}
+          onNext={goToNextStep}
+          onPrev={goToPrevStep}
+        />
+      )}
+
+      {currentStep === 8 && (
+        <Step8Summary
+          formData={formData}
+          selectedDestination={selectedDestination}
+          selectedAccommodation={selectedAccommodation}
+          selectedRestaurants={selectedRestaurants}
+          itinerary={itinerary}
+          onSave={createPlan}
+          onPrev={goToPrevStep}
         />
       )}
     </WizardLayout>

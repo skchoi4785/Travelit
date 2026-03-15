@@ -1,13 +1,21 @@
 /**
- * 여행 계획 생성 위자드 상태 관리 커스텀 훅
- * 4단계 위자드의 모든 상태를 보유하며, 각 Step 컴포넌트는 UI만 담당합니다.
+ * 여행 계획 생성 위자드 상태 관리 커스텀 훅 (Sprint 3: 8단계 확장)
+ * 모든 위자드 상태를 보유하며, 각 Step 컴포넌트는 UI만 담당합니다.
  */
 
 import { useState, useCallback } from 'react';
-import { Destination, WizardFormData, TravelPlan, CompanionType, TravelStyle, Environment } from '@/types/plan';
-import { mockDestinations, mockTravelPlans, PLANS_STORAGE_KEY } from '@/data/mockData';
+import {
+  Destination, WizardFormData, TravelPlan,
+  CompanionType, TravelStyle, Environment,
+  Accommodation, Restaurant, ItineraryDay,
+} from '@/types/plan';
+import {
+  mockDestinations, mockAccommodations, mockRestaurants,
+  mockItinerary, PLANS_STORAGE_KEY,
+} from '@/data/mockData';
 
-/** 위자드 초기 폼 데이터 */
+export const TOTAL_STEPS = 8;
+
 const initialFormData: WizardFormData = {
   startDate: '',
   duration: 0,
@@ -16,18 +24,28 @@ const initialFormData: WizardFormData = {
   environment: '',
 };
 
-/** usePlanWizard 훅 반환 타입 */
 export interface UsePlanWizardReturn {
   currentStep: number;
+  totalSteps: number;
   formData: WizardFormData;
   selectedDestination: Destination | null;
   recommendations: Destination[];
+  itinerary: ItineraryDay[];
+  selectedAccommodation: Accommodation | null;
+  selectedRestaurants: Restaurant[];
+  accommodations: Accommodation[];
+  restaurants: Restaurant[];
   isLoading: boolean;
   goToNextStep: () => void;
   goToPrevStep: () => void;
   updateFormData: (partial: Partial<WizardFormData>) => void;
   selectDestination: (dest: Destination) => void;
   fetchRecommendations: () => Promise<void>;
+  fetchItinerary: () => Promise<void>;
+  fetchAccommodations: () => Promise<void>;
+  fetchRestaurants: () => Promise<void>;
+  selectAccommodation: (acc: Accommodation) => void;
+  toggleRestaurant: (rest: Restaurant) => void;
   createPlan: () => TravelPlan;
 }
 
@@ -36,47 +54,78 @@ export function usePlanWizard(): UsePlanWizardReturn {
   const [formData, setFormData] = useState<WizardFormData>(initialFormData);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
   const [recommendations, setRecommendations] = useState<Destination[]>([]);
+  const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
+  const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
+  const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
+  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  /** 폼 데이터 부분 업데이트 */
   const updateFormData = useCallback((partial: Partial<WizardFormData>) => {
     setFormData((prev) => ({ ...prev, ...partial }));
   }, []);
 
-  /** 다음 단계로 이동 */
   const goToNextStep = useCallback(() => {
-    setCurrentStep((prev) => Math.min(prev + 1, 4));
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
   }, []);
 
-  /** 이전 단계로 이동 */
   const goToPrevStep = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   }, []);
 
-  /** 여행지 선택 */
   const selectDestination = useCallback((dest: Destination) => {
     setSelectedDestination(dest);
   }, []);
 
-  /**
-   * 여행지 추천 목록 조회 (Mock)
-   * 실제 LLM 연동 시 이 함수 내부만 수정하면 됩니다.
-   * 2초 딜레이로 LLM 응답 대기 경험을 재현합니다.
-   */
+  const selectAccommodation = useCallback((acc: Accommodation) => {
+    setSelectedAccommodation(acc);
+  }, []);
+
+  const toggleRestaurant = useCallback((rest: Restaurant) => {
+    setSelectedRestaurants((prev) => {
+      const exists = prev.find((r) => r.id === rest.id);
+      return exists ? prev.filter((r) => r.id !== rest.id) : [...prev, rest];
+    });
+  }, []);
+
+  /** Step 2 → Step 3: 여행지 추천 (2초 Mock 딜레이) */
   const fetchRecommendations = useCallback(async () => {
     setIsLoading(true);
     // TODO: Sprint 1-B 완료 후 실제 API 호출로 교체
-    // const response = await api.post('/recommendations/destinations', { ...formData });
-    // setRecommendations(response.data.destinations);
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // LLM 대기 시뮬레이션
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     setRecommendations(mockDestinations);
     setIsLoading(false);
   }, []);
 
-  /**
-   * 여행 계획 생성 (Mock)
-   * localStorage에 저장하여 페이지 새로고침 시에도 유지
-   */
+  /** Step 4 → Step 5: 일자별 동선 추천 (2초 Mock 딜레이) */
+  const fetchItinerary = useCallback(async () => {
+    setIsLoading(true);
+    // TODO: POST /api/recommendations/itinerary 호출로 교체
+    // TODO: Promise.all([fetchItinerary, fetchAccommodations, fetchRestaurants]) 병렬 처리 준비됨
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setItinerary(mockItinerary.slice(0, formData.duration));
+    setIsLoading(false);
+  }, [formData.duration]);
+
+  /** 숙소 추천 로드 */
+  const fetchAccommodations = useCallback(async () => {
+    setIsLoading(true);
+    // TODO: POST /api/recommendations/accommodations 호출로 교체
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setAccommodations(mockAccommodations);
+    setIsLoading(false);
+  }, []);
+
+  /** 맛집 추천 로드 */
+  const fetchRestaurants = useCallback(async () => {
+    setIsLoading(true);
+    // TODO: POST /api/recommendations/restaurants 호출로 교체
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setRestaurants(mockRestaurants);
+    setIsLoading(false);
+  }, []);
+
+  /** 여행 계획 생성 — localStorage 저장 */
   const createPlan = useCallback((): TravelPlan => {
     if (!selectedDestination) throw new Error('여행지를 선택해주세요.');
 
@@ -95,17 +144,15 @@ export function usePlanWizard(): UsePlanWizardReturn {
       companionType: formData.companionType as CompanionType,
       travelStyle: formData.travelStyle as TravelStyle,
       environment: formData.environment as Environment,
-      status: 'planning',
+      status: 'itinerary_ready',
       createdAt: new Date().toISOString().split('T')[0],
     };
 
-    // localStorage에 저장
     const existing = JSON.parse(
       typeof window !== 'undefined' ? localStorage.getItem(PLANS_STORAGE_KEY) || '[]' : '[]'
     ) as TravelPlan[];
-    const updated = [newPlan, ...existing];
     if (typeof window !== 'undefined') {
-      localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify([newPlan, ...existing]));
     }
 
     return newPlan;
@@ -113,15 +160,26 @@ export function usePlanWizard(): UsePlanWizardReturn {
 
   return {
     currentStep,
+    totalSteps: TOTAL_STEPS,
     formData,
     selectedDestination,
     recommendations,
+    itinerary,
+    selectedAccommodation,
+    selectedRestaurants,
+    accommodations,
+    restaurants,
     isLoading,
     goToNextStep,
     goToPrevStep,
     updateFormData,
     selectDestination,
     fetchRecommendations,
+    fetchItinerary,
+    fetchAccommodations,
+    fetchRestaurants,
+    selectAccommodation,
+    toggleRestaurant,
     createPlan,
   };
 }

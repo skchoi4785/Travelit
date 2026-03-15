@@ -67,6 +67,9 @@ export default function ItineraryTimeline({ days }: ItineraryTimelineProps) {
                 {/* 활동 카드 */}
                 <div className="flex-1 bg-white rounded-xl border border-gray-100 p-4 shadow-sm mb-1">
                   <h4 className="text-sm font-semibold text-gray-900">{activity.place}</h4>
+                  {activity.description && (
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">{activity.description}</p>
+                  )}
                   <div className="flex items-center gap-3 mt-1.5">
                     <span className="text-xs text-gray-500 flex items-center gap-1">
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

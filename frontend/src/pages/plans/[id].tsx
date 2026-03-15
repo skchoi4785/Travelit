@@ -131,15 +131,18 @@ export default function PlanDetailPage() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">{acc.name}</h3>
-                  <span className="inline-block mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                    {acc.type}
-                  </span>
+                  <p className="text-xs text-gray-400 mt-0.5">{acc.type} · {acc.location}</p>
                 </div>
                 <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2 py-1 rounded-lg whitespace-nowrap">
                   {acc.priceRange}
                 </span>
               </div>
               <p className="text-xs text-gray-500 leading-relaxed mt-2">{acc.description}</p>
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {acc.features.map((f) => (
+                  <span key={f} className="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">{f}</span>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -163,6 +166,14 @@ export default function PlanDetailPage() {
                 </span>
               </div>
               <p className="text-xs text-gray-500 leading-relaxed mt-2">{rest.description}</p>
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {rest.recommendedDays.map((day) => (
+                  <span key={day} className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5">Day {day}</span>
+                ))}
+                {rest.features.map((f) => (
+                  <span key={f} className="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">{f}</span>
+                ))}
+              </div>
             </div>
           ))}
         </div>

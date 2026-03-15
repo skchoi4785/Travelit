@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: 백엔드 테스트
+    name: 백엔드 테스트 (NestJS + Jest)
     runs-on: ubuntu-latest
 
     services:
@@ -26,46 +26,29 @@ jobs:
         ports:
           - 5432:5432
 
-      redis:
-        image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      - name: Python 3.12 설정
-        uses: actions/setup-python@v5
+      - name: Node.js 20 설정
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
-          cache: "pip"
-          # TODO: requirements.txt 경로를 프로젝트에 맞게 수정하세요
-          cache-dependency-path: backend/requirements.txt
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
-      - name: 의존성 설치
-        # TODO: requirements.txt 경로를 프로젝트에 맞게 수정하세요
-        run: pip install -r backend/requirements.txt
+      - name: 백엔드 의존성 설치
+        run: npm ci
+        working-directory: backend
 
-      - name: pytest 실행
+      - name: Jest 테스트 실행
         env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: app_test
-          POSTGRES_USER: app_user
-          POSTGRES_PASSWORD: testpassword
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
+          DATABASE_URL: postgresql://app_user:testpassword@localhost:5432/app_test
           JWT_SECRET: test-jwt-secret-for-ci
-          SECRET_KEY: test-secret-key-for-ci
-          DEBUG: "false"
-        # TODO: 테스트 경로를 프로젝트에 맞게 수정하세요
-        run: pytest backend/tests/ -v --tb=short
+          JWT_EXPIRES_IN: 1h
+          NODE_ENV: test
+        run: npm test
+        working-directory: backend
 
   build:
     name: Docker 빌드 확인
@@ -75,11 +58,10 @@ jobs:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      # TODO: 프로젝트의 Dockerfile 경로에 맞게 빌드 스텝을 수정하세요
       - name: 백엔드 이미지 빌드 테스트
-        run: docker build -f docker/backend/Dockerfile.prod --target runtime -t app-backend:test .
+        run: docker build -f backend/Dockerfile -t travelit-backend:test ./backend
 
       - name: 프론트엔드 이미지 빌드 테스트
-        run: docker build -f docker/frontend/Dockerfile.prod --target runtime -t app-frontend:test .
+        run: docker build -f frontend/Dockerfile -t travelit-frontend:test ./frontend
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_API_URL: http://localhost:4000

@@ -79,8 +79,8 @@ travelit/
 
 ```bash
 # 저장소 클론
-git clone https://github.com/frogy95/choiji-guide-big.git
-cd choiji-guide-big
+git clone https://github.com/skchoi4785/Travelit.git
+cd Travelit
 
 # 환경변수 설정
 cp .env.example .env
